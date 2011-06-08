@@ -122,13 +122,26 @@ package com.pusher.channel{
 		/**
 		 * Sends the given event with the given data to Pusher over this channel.
 		 *  
-		 * @param eventName The name of the event.
+		 * @param eventName The name of the event. Include prefix in 
+		 * 									the name for client events.
 		 * @param data The data to send with the event.
 		 * @return The Channel instance.
 		 */		
 		public function trigger(eventName:String, data:Object):Channel{
 			pusher.sendEvent(eventName, data, name);
 			return this;
+		}
+		
+		/**
+		 * Convenience method for sending client events.
+		 * Sends the given event with the given data to Pusher over this channel.
+		 *  
+		 * @param eventName The name of the event without the client event prefix.
+		 * @param data The data to send with the event.
+		 * @return The Channel instance.
+		 */		
+		public function triggerClient(eventName:String, data:Object):Channel{
+			return trigger(PusherConstants.CLIENT_EVENT_NAME_PREFIX + eventName, data);
 		}
 		
 		/**

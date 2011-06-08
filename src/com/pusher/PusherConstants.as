@@ -10,6 +10,7 @@ package com.pusher{
 		
 		static public const CHANNEL_NAME_PRIVATE_PREFIX:String = "private-";
 		static public const CHANNEL_NAME_PRESENCE_PREFIX:String = "presence-";
+		static public const CLIENT_EVENT_NAME_PREFIX:String = "client-";
 		
 		static public const CONNECTION_ESTABLISHED_EVENT_NAME:String = "pusher:connection_established";
 		static public const CONNECTION_DISCONNECTED_EVENT_NAME:String = "pusher:connection_disconnected";
