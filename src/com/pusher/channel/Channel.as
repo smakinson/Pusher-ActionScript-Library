@@ -2,7 +2,9 @@ package com.pusher.channel{
 	
 	import com.pusher.Pusher;
 	import com.pusher.PusherConstants;
+	import com.pusher.events.PusherEvent;
 	
+	import flash.events.EventDispatcher;
 	import flash.utils.Dictionary;
 	
 	
@@ -11,7 +13,13 @@ package com.pusher.channel{
 	 *
 	 * This is an open channel of communication for pusher.
 	 */
-	public class Channel{
+	public class Channel extends EventDispatcher{
+		
+		/**
+		 * Set this to dispatch events even if addEventListener has not been called directly.
+		 * If this is set then its assumed you want the events to bubble as well.
+		 */
+		public var eventDispatcher:EventDispatcher;
 		
 		protected var _name:String = "";
 		public function get name():String{
@@ -120,42 +128,33 @@ package com.pusher.channel{
 		}
 		
 		/**
-		 * Sends the given event with the given data to Pusher over this channel.
-		 *  
-		 * @param eventName The name of the event. Include prefix in 
-		 * 									the name for client events.
-		 * @param data The data to send with the event.
-		 * @return The Channel instance.
-		 */		
-		public function trigger(eventName:String, data:Object):Channel{
-			pusher.sendEvent(eventName, data, name);
-			return this;
-		}
-		
-		/**
-		 * Convenience method for sending client events.
-		 * Sends the given event with the given data to Pusher over this channel.
-		 *  
-		 * @param eventName The name of the event without the client event prefix.
-		 * @param data The data to send with the event.
-		 * @return The Channel instance.
-		 */		
-		public function triggerClient(eventName:String, data:Object):Channel{
-			return trigger(PusherConstants.CLIENT_EVENT_NAME_PREFIX + eventName, data);
-		}
-		
-		/**
 		 * @private
 		 */
 		public function dispatch(eventName:String, data:Object):void{
 			var callbacks:Array = this.callbacks[eventName] as Array;
-			
+						
 			if(callbacks){
 				for(var i:uint = 0; i < callbacks.length; i++){
 					callbacks[i](data);
 				}
 			}else{
 				Pusher.log('Pusher : No callbacks for ' + eventName);
+			}
+			
+			if(! global){
+				// See if events need to be dispatched as well.
+				// Direct listeners.
+				if(hasEventListener(eventName)){
+					// Bubbles only if one of the other eventDispatcher options has been set to this for some reason.
+					dispatchEvent(new PusherEvent(eventName, data, (eventDispatcher ==  this || Pusher.eventDispatcher == this)));
+				}
+				
+				// Indirect listeners. These bubble.
+				if(eventDispatcher && eventDispatcher != this){
+					eventDispatcher.dispatchEvent(new PusherEvent(eventName, data, true));
+				}else if(Pusher.eventDispatcher && Pusher.eventDispatcher != this){
+					Pusher.eventDispatcher.dispatchEvent(new PusherEvent(eventName, data, true));
+				}
 			}
 		}
 		
@@ -164,12 +163,15 @@ package com.pusher.channel{
 		 */
 		public function dispatchWithAll(eventName:String, data:Object):void{
 			if(! global){
-				Pusher.log("Pusher : event recd (channel,event,data)", name, eventName, data);
+				Pusher.log("Pusher : event recd (channel,event,data) : " + name + ", " + eventName + ", " + data);
 			}
 			dispatch(eventName, data);
 			dispatchGlobalCallbacks(eventName, data);
 		}
 		
+		/**
+		 * @private
+		 */
 		protected function dispatchGlobalCallbacks(eventName:String, data:Object):void{
 			var callback:Function;
 			for(var i:int = 0; i < globalCallbacks.length; i++){
@@ -179,10 +181,21 @@ package com.pusher.channel{
 			}
 		}
 		
+		/**
+		 * Sends the given event with the given data to Pusher over this channel.
+		 *  
+		 * @param eventName The name of the event WITHOUT THE CLIENT EVENT PREFIX, it is prepended automatically.
+		 * @param data The data to send with the event.
+		 * @return The Channel instance.
+		 */		
+		public function trigger(eventName:String, data:Object):Channel{
+			throw new Error("Currently the basic Channel does not support trigger calls.");
+		}
+		
 		/** 
 		 * @inheritDoc
 		 */		
-		public function toString():String{
+		override public function toString():String{
 			return "[Channel " + name + "]";
 		}
 	}

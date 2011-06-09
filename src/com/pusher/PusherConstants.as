@@ -10,6 +10,11 @@ package com.pusher{
 		
 		static public const CHANNEL_NAME_PRIVATE_PREFIX:String = "private-";
 		static public const CHANNEL_NAME_PRESENCE_PREFIX:String = "presence-";
+		
+		/**
+		 * @private
+		 * The end user should not need to use this prefix since the methods auto prepend it. 
+		 */		
 		static public const CLIENT_EVENT_NAME_PREFIX:String = "client-";
 		
 		static public const CONNECTION_ESTABLISHED_EVENT_NAME:String = "pusher:connection_established";

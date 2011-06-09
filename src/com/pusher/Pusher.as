@@ -8,6 +8,7 @@ package com.pusher{
 	import com.pusher.data.IDataParser;
 	import com.pusher.data.JSONParser;
 	
+	import flash.events.EventDispatcher;
 	import flash.system.Security;
 	import flash.utils.clearTimeout;
 	import flash.utils.setTimeout;
@@ -27,7 +28,24 @@ package com.pusher{
 		static protected const SECURE_PORT:int = 443;
 		static protected const HOST:String = "ws.pusherapp.com";
 		
+		/**
+		 * The number of milliseconds to wait before timing out when trying to connect. 
+		 */		
 		static public var connectionTimeout:int = 5000;
+		
+		/**
+		 * Set this to true to see what the WebSocket logs as well as Pushers logs. 
+		 */		
+		static public var enableWebSocketLogging:Boolean = false;
+		
+		/**
+		 * Set this to have channels dispatch events even if
+		 * addEventListener has not been called directly on that channel.
+		 * If this is set then its assumed you want the events to bubble as well.
+		 * You can override this on a per channel basis if desired.
+		 * If you want to catch events all over the place you could set this to the stage.
+		 */
+		static public var eventDispatcher:EventDispatcher;
 		
 		static protected var webSocketNextId:int = 0;
 		static protected var allowReconnect:Boolean = true;
@@ -213,10 +231,16 @@ package com.pusher{
 			connection.close();
 		}
 		
+		/**
+		 * @private
+		 */
 		protected function reconnect():void{
 			connect();
 		}
 		
+		/**
+		 * @private
+		 */
 		protected function retryConnect():void{
 			// Unless we're ssl only, try toggling between ws & wss
 			if(! encrypted){
@@ -299,6 +323,9 @@ package com.pusher{
 			return subscribe(PusherConstants.CHANNEL_NAME_PRESENCE_PREFIX + channelName);			
 		}
 		
+		/**
+		 * @private
+		 */	
 		protected function subscribeAll():void{
 			for each(var channel:Channel in channels.channels){
 				subscribe(channel.name);
@@ -322,6 +349,10 @@ package com.pusher{
 		
 		/**
 		 * @private
+		 * @param eventName The name of the event.
+		 * @param data The data to send with the event.
+		 * @param channelName Optional name of the channel to send over.
+		 * @return The Pusher instance.
 		 */
 		public function sendEvent(eventName:String, data:Object, channelName:String = ""):Pusher{
 			log("Pusher : event sent (channel,event,data) : " + channelName + ", " + eventName + ", " + data);
@@ -339,6 +370,13 @@ package com.pusher{
 			return this;
 		}
 		
+		/**
+		 * @private
+		 * @param eventName The name of the event.
+		 * @param data The data to send with the event.
+		 * @param channelName Optional name of the channel to send over.
+		 * @return The Pusher instance.
+		 */
 		protected function sendLocalEvent(eventName:String, data:Object, channelName:String = ""):void{
 			data = dataDecorator.decorate(eventName, data);
 			
@@ -356,11 +394,17 @@ package com.pusher{
 			globalChannel.dispatchWithAll(eventName, data);
 		}
 		
+		/**
+		 * @private
+		 */
 		protected function toggleSecure():void{
 			log((_secure ? "Pusher : switching to standard connection" : "Pusher : switching to secure connection"));
 			_secure = !_secure;
 		}
 		
+		/**
+		 * @private
+		 */
 		protected function onSocketConnect(e:WebSocketEvent):void{
 			if(retryTimeout)clearTimeout(retryTimeout);
 			if(connectionTimeoutRef)clearTimeout(connectionTimeoutRef);
@@ -368,6 +412,9 @@ package com.pusher{
 			globalChannel.dispatch('open', null);
 		}
 		
+		/**
+		 * @private
+		 */
 		protected function onSocketClose(e:WebSocketEvent = null):void{
 			if(retryTimeout)clearTimeout(retryTimeout);
 			if(connectionTimeoutRef)clearTimeout(connectionTimeoutRef);
@@ -392,10 +439,16 @@ package com.pusher{
 			_connecting = false;
 		}
 		
+		/**
+		 * @private
+		 */
 		protected function onSocketError(e:WebSocketEvent):void{
 			onSocketClose();
 		}
 		
+		/**
+		 * @private
+		 */
 		protected function onSocketMessage(e:WebSocketEvent):void{
 			var params:Object;
 			
@@ -416,6 +469,9 @@ package com.pusher{
 			sendLocalEvent(params.event, params.data, params.channel);
 		}
 		
+		/**
+		 * @private
+		 */
 		protected function onPusherConnectionEstablished(data:Object):void{
 			_connected = true;
 			_connecting = false;
@@ -424,16 +480,25 @@ package com.pusher{
 			subscribeAll();
 		}
 		
+		/**
+		 * @private
+		 */
 		protected function onPusherDisconnected():void{
 			for each(var channel:Channel in channels.channels){
 				channel.disconnect();
 			}
 		}
 		
+		/**
+		 * @private
+		 */
 		protected function onPusherError(data:Object):void{
 			log("Pusher : error : " + data.message);
 		}
 		
+		/** 
+		 * @inheritDoc
+		 */	
 		public function toString():String{
 			return "[Pusher " + socketId + "]";
 		}
@@ -456,7 +521,7 @@ import flash.utils.Dictionary;
 internal class WebSocketLogger implements IWebSocketLogger{
 	
 	public function log(message:String):void{
-		Pusher.log(message);
+		if(Pusher.enableWebSocketLogging)Pusher.log(message);
 	}
 	
 	public function error(message:String):void{

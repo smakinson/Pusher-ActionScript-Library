@@ -34,17 +34,26 @@ package com.pusher.channel{
 			super.disconnect();
 		}
 		
+		/**
+		 * @private
+		 */	
 		override protected function acknowledgeSubscription(data:Object):void{
 			members._membersMap = data.presence.hash;
 			members.count = data.presence.count;
 			super.acknowledgeSubscription(data);
 		}
 		
+		/**
+		 * @private
+		 */	
 		protected function onSubscriptionSucceeded(data:Object):void{
 			acknowledgeSubscription(data);
 			dispatchWithAll(PusherConstants.SUBSCRIPTION_SUCCEEDED_EVENT_NAME, members);
 		}
 		
+		/**
+		 * @private
+		 */	
 		protected function onSubscriptionMemberAdded(data:Object):void{
 			var member:Object = members.add(data.user_id, data.user_info);
 			if(member){
@@ -52,6 +61,9 @@ package com.pusher.channel{
 			}
 		}
 		
+		/**
+		 * @private
+		 */	
 		protected function onSubscriptionMemberRemoved(data:Object):void{
 			var member:Object = this.members.remove(data.user_id);
 			if(member){

@@ -1,6 +1,7 @@
 package com.pusher.channel{
 	
 	import com.pusher.Pusher;
+	import com.pusher.PusherConstants;
 	
 	
 	/**
@@ -29,6 +30,14 @@ package com.pusher.channel{
 		 */	
 		override public function authorize(pusher:Pusher, callback:Function):void{
 			Pusher.authorizer.authorize(pusher, this, callback);
+		}
+		
+		/** 
+		 * @inheritDoc
+		 */		
+		override public function trigger(eventName:String, data:Object):Channel{
+			pusher.sendEvent(PusherConstants.CLIENT_EVENT_NAME_PREFIX + eventName, data, name);
+			return this;
 		}
 		
 		/** 

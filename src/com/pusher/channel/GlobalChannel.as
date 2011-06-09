@@ -2,6 +2,8 @@ package com.pusher.channel{
 	
 	import com.pusher.Pusher;
 	
+	import flash.events.Event;
+	
 	
 	/**
 	 * @author Shawn Makinson, squareFACTOR, www.squarefactor.com
