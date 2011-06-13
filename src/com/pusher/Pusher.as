@@ -4,6 +4,8 @@ package com.pusher{
 	import com.pusher.auth.IAuthorizer;
 	import com.pusher.channel.Channel;
 	import com.pusher.channel.GlobalChannel;
+	import com.pusher.channel.PresenceChannel;
+	import com.pusher.channel.PrivateChannel;
 	import com.pusher.data.IDataDecorator;
 	import com.pusher.data.IDataParser;
 	import com.pusher.data.JSONParser;
@@ -309,8 +311,8 @@ package com.pusher{
 		 * @param channelName The channel name without the private prefix.
 		 * @return The channel.
 		 */		
-		public function subscribeAsPrivate(channelName:String):Channel{
-			return subscribe(PusherConstants.CHANNEL_NAME_PRIVATE_PREFIX + channelName);			
+		public function subscribeAsPrivate(channelName:String):PrivateChannel{
+			return subscribe(PusherConstants.CHANNEL_NAME_PRIVATE_PREFIX + channelName) as PrivateChannel;			
 		}
 		
 		/**
@@ -319,8 +321,8 @@ package com.pusher{
 		 * @param channelName The channel name without the presence prefix.
 		 * @return The channel.
 		 */		
-		public function subscribeAsPresence(channelName:String):Channel{
-			return subscribe(PusherConstants.CHANNEL_NAME_PRESENCE_PREFIX + channelName);			
+		public function subscribeAsPresence(channelName:String):PresenceChannel{
+			return subscribe(PusherConstants.CHANNEL_NAME_PRESENCE_PREFIX + channelName) as PresenceChannel;			
 		}
 		
 		/**

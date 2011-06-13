@@ -29,7 +29,11 @@ package com.pusher.channel{
 		 * @private
 		 */	
 		override public function authorize(pusher:Pusher, callback:Function):void{
-			Pusher.authorizer.authorize(pusher, this, callback);
+			try{
+				Pusher.authorizer.authorize(pusher, this, callback);
+			}catch(err:Error){
+				throw new Error("Pusher : Error, you tried to use a private channel without setting Pusher.authorizer");
+			}
 		}
 		
 		/** 

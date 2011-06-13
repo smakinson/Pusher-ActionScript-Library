@@ -103,6 +103,20 @@ package com.pusher.channel{
 		}
 		
 		/**
+		 * Creates a callback for specific Pusher events through this channel.
+		 * 
+		 * @param eventName The name of the event to run the callback for WITHOUT THE CLIENT EVENT PREFIX, it is prepended automatically.
+		 * @param callback The callback function to run.
+		 * @return The Channel instance. 
+		 */	
+		public function bindToClient(eventName:String, callback:Function):Channel{
+			eventName = PusherConstants.CLIENT_EVENT_NAME_PREFIX + eventName;
+			callbacks[eventName] = callbacks[eventName] || [];
+			callbacks[eventName].push(callback);
+			return this;
+		}
+		
+		/**
 		 * Creates a callback that runs for all Pusher events on this channel.
 		 * 
 		 * @param callback The callback function to run.
