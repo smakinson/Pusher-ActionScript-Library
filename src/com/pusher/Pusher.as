@@ -485,7 +485,7 @@ package com.pusher{
 		/**
 		 * @private
 		 */
-		protected function onPusherDisconnected():void{
+		protected function onPusherDisconnected(data:Object):void{
 			for each(var channel:Channel in channels.channels){
 				channel.disconnect();
 			}
