@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+	**********************
+	builds Pusher-Actionscript-Library 
+	**********************
+	exporting only classes declered in include-classes 
+-->
+<project name="pusher" basedir="." default="main" >
+	<property environment="env"/>
+	<fail unless="env.FLEX_HOME">FLEX_HOME must be set with the current flash SDK path, maybe this would help: export FLEX_HOME="/Applications/Adobe Flash Builder 4.5/sdks/4.5.1_AIR3_1/"</fail>
+	<property name="FLEX_HOME" value="${env.FLEX_HOME}"/>
+    <taskdef resource="flexTasks.tasks" classpath="${FLEX_HOME}/ant/lib/flexTasks.jar" />
+	
+    <property name="SRC_ROOT" value="${basedir}/src"/>
+    <property name="DEPLOY_DIR" value="${basedir}/bin-ant"/>
+	<property name="SWC_NAME" value="Pusher-Actionscript-Library.swc"/>
+	
+	
+	<target name="get_git_commit" >
+		<exec executable="git" outputproperty="git.revision">
+			<arg value="log" />
+			<arg value="-1"/>
+			<arg value="--oneline" />
+		</exec>
+	</target>
+	
+	
+	<target name="main" depends="get_git_commit"> 
+	 	 <compc 
+	 	 	output="${DEPLOY_DIR}/${SWC_NAME}" 
+	 	 	include-classes="com.pusher.Pusher"
+	 	 	swf-version="13" 
+	 	 	target-player="11.0.0" 
+	 	 >
+	 	 	
+	 	 	<load-config filename="${FLEX_HOME}/frameworks/air-config.xml" />
+	 	 	<source-path path-element="${SRC_ROOT}" /> 
+	 	 </compc>
+	</target>
+	
+	
+    <target name="clean">
+        <delete dir="${DEPLOY_DIR}/generated"/>
+        <delete>
+            <fileset dir="${DEPLOY_DIR}" includes="${SWC_NAME}"/>
+        </delete>
+    </target>
+</project>

@@ -1,6 +1,5 @@
 package com.pusher.data{
 	
-	import com.adobe.serialization.json.JSON;
 	import com.pusher.Pusher;
 	
 	
@@ -17,7 +16,7 @@ package com.pusher.data{
 		 */		
 		public function parse(data:String):*{
 			try{
-				return JSON.decode(data);
+				return JSON.parse(data);
 			}catch(err:Error){
 				Pusher.log("Pusher : data attribute not valid JSON - you may wish to implement your own Pusher.parser");
 				return data;
