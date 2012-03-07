@@ -133,7 +133,7 @@ package com.pusher{
 			id = webSocketNextId++;
 			
 			if(! policyFileLoaded){
-				Security.loadPolicyFile("http://ws.pusherapp.com:843/crossdomain.xml");
+				Security.loadPolicyFile("xmlsocket://ws.pusherapp.com:843/crossdomain.xml");
 				policyFileLoaded = true;
 			}
 			
