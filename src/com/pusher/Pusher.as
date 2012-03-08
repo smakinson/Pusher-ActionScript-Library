@@ -1,6 +1,5 @@
 package com.pusher{
 	
-	import com.adobe.serialization.json.JSON;
 	import com.pusher.auth.IAuthorizer;
 	import com.pusher.channel.Channel;
 	import com.pusher.channel.GlobalChannel;
@@ -134,7 +133,7 @@ package com.pusher{
 			id = webSocketNextId++;
 			
 			if(! policyFileLoaded){
-				Security.loadPolicyFile("http://ws.pusherapp.com:843/crossdomain.xml");
+				Security.loadPolicyFile("xmlsocket://ws.pusherapp.com:843/crossdomain.xml");
 				policyFileLoaded = true;
 			}
 			
@@ -368,7 +367,7 @@ package com.pusher{
 				payload['channel'] = channelName;
 			}
 			
-			connection.send(JSON.encode(payload));
+			connection.send(JSON.stringify(payload));
 			return this;
 		}
 		
@@ -455,7 +454,7 @@ package com.pusher{
 			var params:Object;
 			
 			try{
-				params = JSON.decode(decodeURIComponent(e.message));
+				params = JSON.parse(decodeURIComponent(e.message));
 			}catch(err:Error){
 				log('Pusher : Error getting message data');
 			}
@@ -486,6 +485,7 @@ package com.pusher{
 		 * @private
 		 */
 		protected function onPusherDisconnected(data:Object):void{
+			log("Pusher : Disconnected");
 			for each(var channel:Channel in channels.channels){
 				channel.disconnect();
 			}
@@ -509,7 +509,6 @@ package com.pusher{
 
 // A few things that only this class uses.
 
-import com.adobe.serialization.json.JSON;
 import com.pusher.Pusher;
 import com.pusher.channel.Channel;
 import com.pusher.data.IDataDecorator;
