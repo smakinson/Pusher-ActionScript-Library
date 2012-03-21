@@ -9,8 +9,6 @@
  */
 package com.hurlant.util.der
 {
-	import com.hurlant.math.BigInteger;
-	
 	import flash.utils.ByteArray;
 	import com.hurlant.util.der.Sequence;
 	import com.hurlant.util.Hex;

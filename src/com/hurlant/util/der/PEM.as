@@ -9,7 +9,6 @@
 package com.hurlant.util.der
 {
 	import com.hurlant.crypto.rsa.RSAKey;
-	import com.hurlant.math.BigInteger;
 	import com.hurlant.util.Base64;
 	
 	import flash.utils.ByteArray;
